@@ -1,7 +1,9 @@
+import asyncio.tasks
 import random
 import pygame
 from noise import pnoise2
 import numpy as np
+import tkinter as tk
 
 
 def generate_perlin_noise_2d(shape, scale=10.0, octaves=6, persistence=0.5, lacunarity=2.0, seed=None):
@@ -37,28 +39,53 @@ topo_mode = True
 
 clock = pygame.time.Clock()
 
-while not done:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            done = True
 
-    if not drawn:
-        screen.fill(BG)
-        for i in range(size[0]):
-            for j in range(size[1]):
-                if not topo_mode:
-                    color = list(ACCENT)
-                    mul = int(layers * (noise[i][j] + maximum)) * num
-                    for z in range(len(color)):
-                        color[z] = color[z] * mul
-                    screen.set_at((i, j), color)
-                else:
-                    for value in topo_values:
-                        if (value + max_distance) > abs(noise[i][j]) > (value - max_distance):
-                            screen.set_at((i, j), ACCENT)
-        drawn = True
+def on_click():
+    global drawn
+    print("Button clicked!")
+    drawn = False
 
-    pygame.display.flip()
-    clock.tick(20)
 
-pygame.quit()
+async def run_tk():
+    app = tk.Tk()
+    app.title("Tkinter App")
+    app.geometry("300x200")
+    app.label = tk.Label(text="Hello, Tkinter!")
+    app.label.pack(pady=20)
+    app.button = tk.Button(text="Click Me", command=on_click)
+    app.button.pack()
+    app.mainloop()
+
+async def run_pygame():
+    global done
+    global drawn
+    while not done:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                done = True
+
+        if not drawn:
+            screen.fill(BG)
+            for i in range(size[0]):
+                pygame.display.flip()
+                for j in range(size[1]):
+                    if not topo_mode:
+                        color = list(ACCENT)
+                        mul = int(layers * (noise[i][j] + maximum)) * num
+                        for z in range(len(color)):
+                            color[z] = color[z] * mul
+                        screen.set_at((i, j), color)
+                    else:
+                        for value in topo_values:
+                            if (value + max_distance) > abs(noise[i][j]) > (value - max_distance):
+                                screen.set_at((i, j), ACCENT)
+            drawn = True
+
+        pygame.display.flip()
+        clock.tick(20)
+
+    pygame.quit()
+
+asyncio.new_event_loop()
+asyncio.tasks.create_task(run_tk)
+asyncio.tasks.create_task(run_pygame)

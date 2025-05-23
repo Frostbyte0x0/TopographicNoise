@@ -37,12 +37,10 @@ topo_mode = True
 
 clock = pygame.time.Clock()
 
-
 while not done:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             done = True
-
 
     if not drawn:
         screen.fill(BG)
@@ -58,12 +56,9 @@ while not done:
                     for value in topo_values:
                         if (value + max_distance) > abs(noise[i][j]) > (value - max_distance):
                             screen.set_at((i, j), ACCENT)
-
-                #pygame.display.flip()
         drawn = True
 
     pygame.display.flip()
-
-    clock.tick(0.1)
+    clock.tick(20)
 
 pygame.quit()
